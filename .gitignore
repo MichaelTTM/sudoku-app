@@ -35,3 +35,6 @@ android/.gradle
 *.njsproj
 *.sln
 *.sw?
+
+# 暫存測試圖
+assets/_*

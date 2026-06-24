@@ -1,14 +1,13 @@
 // 故事與關卡資料：隨機漫步（黑色偵探 / 賽博朋克）
-// 每一關有固定 seed（題目固定）、難度、變體（經典/對角線）、進場與過關劇情台詞。
+// 每一關有固定 seed（題目固定）、難度、變體（經典/對角線/不規則宮）、進場與過關台詞。
 import { VARIANTS } from './variants.js'
 
 export const STORY = {
   title: '隨機漫步',
-  subtitle: '切線過客的辦案手記',
+  subtitle: '切線過客辦案手記',
   intro:
-    '蒸氣與霓虹交織的矩陣城，正發生一連串連環失蹤案。現場沒有指紋，' +
-    '只留下一張張沒填完的數字矩陣——死者的「死前訊息」。你是被稱為「切線過客」的私家偵探，' +
-    '游走在城市邊緣。解開矩陣，特定座標上的數字會連成下一個犯罪現場的地址。',
+    '矩陣城又死了人。現場乾乾淨淨，只留下一張沒填完的數字矩陣——死者最後寫的東西。' +
+    '他們叫我「切線過客」，一個不替任何幫派做事的偵探。把矩陣解開，對的座標就會指向下一個現場。',
 }
 
 export const CHAPTERS = [
@@ -17,13 +16,13 @@ export const CHAPTERS = [
     name: '霓虹下城',
     emoji: '🌃',
     accent: '#ec4899',
-    desc: '雨夜、霓虹與第一具失蹤者的線索。',
+    desc: '雨夜、霓虹，還有第一具屍體。',
     levels: [
-      { difficulty: 'starter', seed: 1101, intro: '霓虹下城的雨夜，失蹤者的公寓桌上留著一張沒填完的數字矩陣——他的死前訊息。', outro: '矩陣補完了。第 3 行第 5 列是 7：第三大道 5 號，你記下這個地址。' },
-      { difficulty: 'starter', seed: 1102, intro: '第三大道 5 號的牆上，又是一張殘缺的數列。', outro: '數字接上了，座標指向下城一間地下酒吧。' },
-      { difficulty: 'easy', seed: 1103, intro: '酒吧後巷，閃爍的招牌下躺著第三張矩陣。', outro: '解開的瞬間你明白：這些失蹤案，彼此相連。' },
-      { difficulty: 'easy', seed: 1104, intro: '線索把你帶向一棟廢棄旅館，房卡上印著未完成的數列。', outro: '座標浮現——失蹤者全都來過同一個地方。' },
-      { difficulty: 'medium', seed: 1105, intro: '下城最後一條線索，藏在當鋪的舊帳本裡。', outro: '帳本指向工業帶的鍋爐廠。霓虹漸遠，蒸氣與鏽味撲面而來。' },
+      { difficulty: 'starter', seed: 1101, intro: '雨下了一整夜。死者桌上擺著這張矩陣，墨水還沒乾。', outro: '湊齊了。3 行 5 列是 7——第三大道 5 號。去看看。' },
+      { difficulty: 'starter', seed: 1102, intro: '第三大道 5 號，牆上用粉筆抄著半串數字。', outro: '接上了。座標指向下城一間地下酒吧。' },
+      { difficulty: 'easy', seed: 1103, intro: '酒吧後巷，招牌一閃一閃，第三張矩陣壓在屍體底下。', outro: '解開的瞬間我懂了：這些人，不是各自失蹤的。' },
+      { difficulty: 'easy', seed: 1104, intro: '線索把我帶到一間廢棄旅館，房卡背面印著數列。', outro: '他們全來過這裡。同一個地方，同一段時間。' },
+      { difficulty: 'medium', seed: 1105, intro: '當鋪的舊帳本，最後一頁夾著沒寫完的數字。', outro: '帳指向工業帶的鍋爐廠。霓虹在後照鏡裡愈縮愈小。' },
     ],
   },
   {
@@ -31,13 +30,13 @@ export const CHAPTERS = [
     name: '蒸氣工業帶',
     emoji: '⚙️',
     accent: '#f59e0b',
-    desc: '齒輪、鍋爐與越來越深的陰謀。',
+    desc: '齒輪、鍋爐，還有越挖越深的東西。',
     levels: [
-      { difficulty: 'easy', seed: 2201, intro: '鍋爐廠的管線上，有人用粉筆畫下了數字矩陣。', outro: '齒輪般的座標咬合在一起，指向下一座車間。' },
-      { difficulty: 'medium', seed: 2202, intro: '車間的蒸氣遮蔽視線，矩陣也更難辨認。', outro: '霧氣散去，數字連成一串通往地下的編號。' },
-      { difficulty: 'medium', seed: 2203, intro: '工人都說沒看見什麼，但機台縫隙裡卡著一張紙條。', outro: '紙條上的數字對上了——有人在替這座城市「收集」人。' },
-      { difficulty: 'medium', seed: 2204, intro: '工業帶深處，一扇鐵門上刻著扭曲的數列。', outro: '門開了，門後是通往地下迴路的階梯。' },
-      { difficulty: 'hard', seed: 2205, intro: '鍋爐廠最後的謎題，守著整個工業帶的祕密。', outro: '蒸氣盡頭是一片漆黑的電纜叢林——數據暗網的入口。' },
+      { difficulty: 'easy', seed: 2201, intro: '鍋爐廠的管線上，有人用粉筆畫了張矩陣。', outro: '齒輪咬上了。下一個座標在隔壁車間。' },
+      { difficulty: 'medium', seed: 2202, intro: '蒸氣糊了視線，矩陣的數字也跟著模糊。', outro: '霧散了，數字連成一串往地下走的編號。' },
+      { difficulty: 'medium', seed: 2203, intro: '工人都說沒看見什麼。機台縫裡卻卡著一張紙條。', outro: '對上了。有人在替這座城「收人」。' },
+      { difficulty: 'medium', seed: 2204, intro: '工業帶最深處，一扇鐵門刻著扭曲的數列。', outro: '門開了。後面是往地下迴路的樓梯。' },
+      { difficulty: 'hard', seed: 2205, intro: '鍋爐廠最後一道題，守著整個廠區的祕密。', outro: '蒸氣到底，是一片黑掉的電纜——數據暗網的入口。' },
     ],
   },
   {
@@ -45,14 +44,14 @@ export const CHAPTERS = [
     name: '地下迴路',
     emoji: '🔌',
     accent: '#06b6d4',
-    desc: '連電路都走對角線——這裡的矩陣，斜線上也不能重複。',
+    desc: '連電路都走對角線——斜線上也不能重複。',
     variant: 'diagonal',
     levels: [
-      { difficulty: 'easy', seed: 3301, intro: '地下迴路裡，連電路都走對角線——這裡的矩陣，兩條主對角線也得各自填滿 1~9。', outro: '對角線接通，一段加密座標亮起。' },
-      { difficulty: 'easy', seed: 3302, intro: '兩條主對角線像交錯的暗線，各自要完整。', outro: '暗線在中央交會，浮出一個門牌號。' },
-      { difficulty: 'medium', seed: 3303, intro: '訊號干擾讓矩陣不斷閃爍。', outro: '雜訊平息，斜向的數字穩定下來。' },
-      { difficulty: 'medium', seed: 3304, intro: '暗網深處沉著一段更複雜的死前訊息。', outro: '訊息還原——失蹤者，是被人「上傳」走的。' },
-      { difficulty: 'hard', seed: 3305, intro: '迴路盡頭最後一道對角線謎題，最為棘手。', outro: '暗網被你打通，所有座標匯向城市中央那座發光的高塔。' },
+      { difficulty: 'easy', seed: 3301, intro: '連電路都走對角線。這裡的矩陣，兩條斜線上也不能重複。', outro: '對角線通了，一段加密座標亮起來。' },
+      { difficulty: 'easy', seed: 3302, intro: '兩條對角線像交錯的暗線，各自得填滿。', outro: '它們在正中央交會，吐出一個門牌號。' },
+      { difficulty: 'medium', seed: 3303, intro: '訊號一直干擾，矩陣閃個不停。', outro: '雜訊壓下去，斜向的數字穩住了。' },
+      { difficulty: 'medium', seed: 3304, intro: '暗網更深處，沉著一段更難纏的死前訊息。', outro: '訊息還原——這些人，是被「上傳」走的。' },
+      { difficulty: 'hard', seed: 3305, intro: '迴路盡頭，最後一道對角線的題。', outro: '暗網打通了。所有座標，指向城中央那座發光的塔。' },
     ],
   },
   {
@@ -60,13 +59,28 @@ export const CHAPTERS = [
     name: '矩陣核心',
     emoji: '🌐',
     accent: '#8b5cf6',
-    desc: '天頂塔。經典與對角線的試煉交錯，直指幕後者。',
+    desc: '天頂塔。經典與對角線交錯，直通幕後。',
     levels: [
-      { difficulty: 'hard', seed: 4401, intro: '矩陣核心，天頂塔。每一層樓都是一道更冷酷的謎題。', outro: '一整層的數字被你連起，真相又近了一步。' },
-      { difficulty: 'hard', seed: 4402, variant: 'diagonal', intro: '這一層的對角線藏著主謀的簽名，別忽略它。', outro: '斜線拼出一個名字——操控全城的那道影子。' },
-      { difficulty: 'hard', seed: 4403, intro: '塔的裂縫裡，無數失蹤者的死前訊息匯成一片。', outro: '碎片癒合，陰謀的輪廓終於清晰。' },
-      { difficulty: 'hard', seed: 4404, variant: 'diagonal', intro: '只剩最後兩道門，對角線仍在低聲提示。', outro: '門後，幕後者的座標已無所遁形。' },
-      { difficulty: 'hard', seed: 4405, variant: 'diagonal', intro: '最後一道矩陣，也是整起連環案的核心。', outro: '真相揭曉。切線過客在手記最後寫下一行：所謂命運，不過是一場隨機漫步——而我，剛剛走完了它。' },
+      { difficulty: 'hard', seed: 4401, intro: '天頂塔。每上一層，題目就更冷一分。', outro: '一整層的數字接起來，真相又近了。' },
+      { difficulty: 'hard', seed: 4402, variant: 'diagonal', intro: '這層的對角線藏著主謀的簽名。別漏看。', outro: '斜線拼出一個名字。操控全城的那道影子。' },
+      { difficulty: 'hard', seed: 4403, intro: '塔的裂縫裡，塞滿了死者們的最後訊息。', outro: '碎片合上，陰謀的形狀清楚了。' },
+      { difficulty: 'hard', seed: 4404, variant: 'diagonal', intro: '剩最後兩道門。對角線還在低聲提示。', outro: '門後，幕後者的座標再也藏不住。' },
+      { difficulty: 'hard', seed: 4405, variant: 'diagonal', intro: '最後一張矩陣。整起案子的核心。', outro: '真相攤開了。我在手記最後寫下：命運不過是場隨機漫步——而我，剛走完它。' },
+    ],
+  },
+  {
+    id: 'ch5',
+    name: '碎裂舊城',
+    emoji: '🧩',
+    accent: '#14b8a6',
+    desc: '結案沒幾天，新的矩陣又冒出來——這次連格子都是碎的。',
+    variant: 'jigsaw',
+    levels: [
+      { difficulty: 'easy', seed: 5501, intro: '案子才結，桌上又出現一張矩陣。這次的宮歪七扭八，不再是方的。', outro: '形狀變了，規矩沒變：每一塊照樣得填滿 1~9。' },
+      { difficulty: 'easy', seed: 5502, intro: '碎掉的街區，碎掉的格子。', outro: '拼回去了。又一個座標浮出來。' },
+      { difficulty: 'medium', seed: 5503, intro: '宮的邊界繞來繞去，看久了眼睛會花。', outro: '跟著邊界走，數字自己會對上。' },
+      { difficulty: 'medium', seed: 5504, intro: '這張矩陣，像被人撕碎再黏回去。', outro: '黏痕底下，藏著下一個地址。' },
+      { difficulty: 'hard', seed: 5505, intro: '最後一塊拼圖，也最不規則。', outro: '城市還在動，案子永遠結不完。我把帽簷壓低，走進雨裡。' },
     ],
   },
 ]

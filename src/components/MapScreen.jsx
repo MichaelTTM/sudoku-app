@@ -1,5 +1,6 @@
 import { CHAPTERS, STORY, LEVELS } from '../game/levels.js'
 import { DIFFICULTIES } from '../game/generator.js'
+import ThemeToggle from './ThemeToggle.jsx'
 
 function MiniStars({ count }) {
   return (
@@ -45,7 +46,7 @@ function LevelNode({ level, index, state, record, onSelect }) {
             className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full text-[0.6rem] font-bold text-white shadow"
             style={{ backgroundColor: level.accent }}
           >
-            ✕
+            {level.variant === 'jigsaw' ? '▦' : '✕'}
           </span>
         )}
       </div>
@@ -64,10 +65,13 @@ function LevelNode({ level, index, state, record, onSelect }) {
   )
 }
 
-export default function MapScreen({ progress, onSelect }) {
+export default function MapScreen({ progress, onSelect, theme, onToggleTheme }) {
   let flatIndex = 0
   return (
-    <div className="min-h-full w-full max-w-[min(92vw,30rem)] mx-auto px-3 py-6">
+    <div className="relative min-h-full w-full max-w-[min(92vw,30rem)] mx-auto px-3 py-6">
+      <div className="absolute right-3 top-6">
+        <ThemeToggle theme={theme} onToggle={onToggleTheme} />
+      </div>
       {/* 故事標題與總進度 */}
       <header className="text-center mb-2">
         <h1 className="text-2xl font-bold text-[var(--ink)]">

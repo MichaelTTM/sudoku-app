@@ -9,8 +9,9 @@ import NumberPad from './NumberPad.jsx'
 import Controls from './Controls.jsx'
 import WinModal from './WinModal.jsx'
 import StoryModal from './StoryModal.jsx'
+import ThemeToggle from './ThemeToggle.jsx'
 
-export default function GameScreen({ level, alreadyDone, onWin, onExit, onGoLevel }) {
+export default function GameScreen({ level, alreadyDone, theme, onToggleTheme, onWin, onExit, onGoLevel }) {
   // 已通關過的關卡重玩時不再顯示進場劇情
   const [showIntro, setShowIntro] = useState(!alreadyDone)
   const [result, setResult] = useState(null)
@@ -56,12 +57,15 @@ export default function GameScreen({ level, alreadyDone, onWin, onExit, onGoLeve
   return (
     <div className="min-h-full flex flex-col items-center py-6 px-3">
       <div className="w-full max-w-[min(92vw,30rem)]">
-        <button
-          onClick={onExit}
-          className="mb-2 text-sm text-[var(--ink-soft)] active:text-[var(--accent)]"
-        >
-          ← 回地圖
-        </button>
+        <div className="mb-2 flex items-center justify-between">
+          <button
+            onClick={onExit}
+            className="text-sm text-[var(--ink-soft)] active:text-[var(--accent)]"
+          >
+            ← 回地圖
+          </button>
+          <ThemeToggle theme={theme} onToggle={onToggleTheme} />
+        </div>
         <Header
           difficulty={game.difficulty}
           seconds={game.seconds}

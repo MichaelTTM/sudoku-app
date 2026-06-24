@@ -11,17 +11,25 @@ export default function Cell({
   sameValue,
   conflict,
   diagonal,
+  regions,
   onSelect,
 }) {
   const r = Math.floor(index / SIZE)
   const c = index % SIZE
 
-  // 粗線：宮的邊界
+  // 粗線：宮的邊界。不規則宮（有 regions）依「與左/上鄰格是否同宮」決定，
+  // 否則用標準 3×3 宮（每 3 格一條粗線）。
+  const thickLeft = regions
+    ? c > 0 && regions[index] !== regions[index - 1]
+    : c % BOX === 0
+  const thickTop = regions
+    ? r > 0 && regions[index] !== regions[index - SIZE]
+    : r % BOX === 0
   const borders = [
     'border-l',
     'border-t',
-    c % BOX === 0 ? 'border-l-2 border-l-[var(--line-strong)]' : '',
-    r % BOX === 0 ? 'border-t-2 border-t-[var(--line-strong)]' : '',
+    thickLeft ? 'border-l-2 border-l-[var(--line-strong)]' : '',
+    thickTop ? 'border-t-2 border-t-[var(--line-strong)]' : '',
     c === SIZE - 1 ? 'border-r-2 border-r-[var(--line-strong)]' : '',
     r === SIZE - 1 ? 'border-b-2 border-b-[var(--line-strong)]' : '',
   ].join(' ')

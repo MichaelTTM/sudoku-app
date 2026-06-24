@@ -16,6 +16,23 @@
   --diag: #ecfeff;
 }
 
+/* 深色主題（黑色偵探氛圍） */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #0e0b1c;
+  --surface: #1a1730;
+  --line-soft: #322d50;
+  --line-strong: #8b86b8;
+  --ink: #ececf3;
+  --ink-soft: #a09cc2;
+  --accent: #a78bfa;
+  --accent-soft: #322c5e;
+  --danger: #fb7185;
+  --given: #ececf3;
+  --user: #a5b4fc;
+  --diag: rgba(34, 211, 238, 0.12);
+}
+
 html,
 body,
 #root {

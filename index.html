@@ -8,6 +8,11 @@
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
     <title>數獨 Sudoku</title>
+    <!-- 在繪製前先套用主題，避免閃爍；預設深色（貼合黑色偵探氛圍） -->
+    <script>
+      document.documentElement.dataset.theme =
+        localStorage.getItem('sudoku.theme') || 'dark'
+    </script>
   </head>
   <body>
     <div id="root"></div>

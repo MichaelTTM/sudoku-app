@@ -26,14 +26,6 @@ export function boxOf(i) {
   return Math.floor(rowOf(i) / BOX) * BOX + Math.floor(colOf(i) / BOX)
 }
 
-// 在 index 放 value 是否與任一 peer 衝突
-function isValid(board, index, value, peers) {
-  for (const p of peers[index]) {
-    if (board[p] === value) return false
-  }
-  return true
-}
-
 function shuffle(arr, rng = Math.random) {
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(rng() * (i + 1))
@@ -42,33 +34,68 @@ function shuffle(arr, rng = Math.random) {
   return arr
 }
 
-// 以回溯法填滿一個完整合法的解盤
+// MRV 啟發：挑「候選最少」的空格優先填，大幅減少回溯（對不規則宮等變體尤其關鍵）。
+// 回傳 { idx, cands } 或 null（已無空格）。cands 為空代表死路。
+function pickCell(board, peers) {
+  let bestIdx = -1
+  let bestCands = null
+  for (let i = 0; i < CELLS; i++) {
+    if (board[i] !== 0) continue
+    const used = new Array(SIZE + 1).fill(false)
+    for (const p of peers[i]) if (board[p]) used[board[p]] = true
+    const cands = []
+    for (let v = 1; v <= SIZE; v++) if (!used[v]) cands.push(v)
+    if (bestCands === null || cands.length < bestCands.length) {
+      bestIdx = i
+      bestCands = cands
+      if (cands.length <= 1) break // 0=死路、1=唯一，都無法更好
+    }
+  }
+  return bestIdx === -1 ? null : { idx: bestIdx, cands: bestCands }
+}
+
+// 單次嘗試填滿（MRV + 隨機值序），超過步數預算就放棄，交由 fillBoard 重啟。
+function tryFill(board, rng, peers, budget) {
+  if (++budget.n > budget.cap) return false
+  const sel = pickCell(board, peers)
+  if (!sel) return true
+  if (sel.cands.length === 0) return false
+  for (const v of shuffle(sel.cands, rng)) {
+    board[sel.idx] = v
+    if (tryFill(board, rng, peers, budget)) return true
+    board[sel.idx] = 0
+  }
+  return false
+}
+
+// 填滿一個完整合法的解盤。少數變體 seed 的隨機值序會讓回溯爆炸，因此每次嘗試
+// 設步數上限；超過就用「已往前推進的 rng」重來 → 換一組值序，通常很快就成功。
+// 同 seed → 同 rng 序列 → 結果仍固定（題目可重現）。
 function fillBoard(board, rng, peers) {
-  const idx = board.indexOf(0)
-  if (idx === -1) return true
-  const candidates = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9], rng)
-  for (const v of candidates) {
-    if (isValid(board, idx, v, peers)) {
-      board[idx] = v
-      if (fillBoard(board, rng, peers)) return true
-      board[idx] = 0
+  for (let attempt = 0; attempt < 2000; attempt++) {
+    const work = board.slice()
+    if (tryFill(work, rng, peers, { n: 0, cap: 30000 })) {
+      for (let i = 0; i < board.length; i++) board[i] = work[i]
+      return true
     }
   }
   return false
 }
 
-// 計算解的數量，最多數到 limit 就停（驗證唯一解，效能可控）
-function countSolutions(board, peers, limit = 2) {
-  const idx = board.indexOf(0)
-  if (idx === -1) return 1
+// 計算解的數量，最多數到 limit 就停（驗證唯一解，效能可控）。
+// budget 限制搜尋節點數：少數變體 seed 的解樹會爆炸，超過預算時保守回傳 limit
+// （視為「非唯一」），讓上層保留該提示 → 產題時間有上限，題目仍保證唯一解。
+function countSolutions(board, peers, limit = 2, budget = { n: 0, cap: 8000 }) {
+  if (++budget.n > budget.cap) return limit
+  const sel = pickCell(board, peers)
+  if (!sel) return 1
+  if (sel.cands.length === 0) return 0
   let count = 0
-  for (let v = 1; v <= SIZE; v++) {
-    if (isValid(board, idx, v, peers)) {
-      board[idx] = v
-      count += countSolutions(board, peers, limit)
-      board[idx] = 0
-      if (count >= limit) return count
-    }
+  for (const v of sel.cands) {
+    board[sel.idx] = v
+    count += countSolutions(board, peers, limit, budget)
+    board[sel.idx] = 0
+    if (count >= limit) return count
   }
   return count
 }
