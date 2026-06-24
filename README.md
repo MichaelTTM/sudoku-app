@@ -1,5 +1,7 @@
 # 隨機漫步 · Sudoku（數獨）
 
+🎮 **[線上試玩 → michaelttm.github.io/sudoku-app](https://michaelttm.github.io/sudoku-app/)**
+
 一款結合**黑色偵探劇情**的數獨遊戲。在蒸氣與霓虹交織的「矩陣城」，連環失蹤案的現場只留下沒填完的數字矩陣——死者的「死前訊息」。你是私家偵探「切線過客」，每解開一張矩陣，特定座標上的數字就連成下一個犯罪現場的地址。
 
 以 React 19 + Vite + Tailwind CSS v4 打造，純前端、無後端，進度自動存在瀏覽器 `localStorage`。
