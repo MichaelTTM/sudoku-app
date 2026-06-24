@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: light;
+  --bg: #f7f7fb;
+  --surface: #ffffff;
+  --line-soft: #d9d9e3;
+  --line-strong: #2b2b3a;
+  --ink: #1f2030;
+  --ink-soft: #6b6b80;
+  --accent: #4f46e5;
+  --accent-soft: #e0e0ff;
+  --danger: #e5484d;
+  --given: #1f2030;
+  --user: #4f46e5;
+  --diag: #ecfeff;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: ui-sans-serif, system-ui, -apple-system, "PingFang TC",
+    "Microsoft JhengHei", sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 避免雙擊縮放 / 長按選字干擾觸控操作 */
+* {
+  -webkit-user-select: none;
+  user-select: none;
+}
