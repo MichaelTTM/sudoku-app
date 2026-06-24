@@ -12,6 +12,16 @@ dist
 dist-ssr
 *.local
 
+# Android 簽署金鑰與密碼，絕不可進版控（防呆，金鑰本體放在 repo 外）
+*.jks
+*.keystore
+keystore.properties
+
+# Capacitor / Android 建置產物
+android/app/build
+android/build
+android/.gradle
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
