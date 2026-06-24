@@ -1,0 +1,30 @@
+<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="neon" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="9" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <!-- 內容置中於 adaptive icon 安全區（約 300~724） -->
+  <g filter="url(#neon)">
+    <!-- 3×3 數獨格線（霓虹青） -->
+    <g stroke="#22d3ee" stroke-width="13" stroke-linecap="round" fill="none">
+      <rect x="300" y="300" width="424" height="424" rx="48"/>
+      <line x1="441.3" y1="316" x2="441.3" y2="708"/>
+      <line x1="582.6" y1="316" x2="582.6" y2="708"/>
+      <line x1="316" y1="441.3" x2="708" y2="441.3"/>
+      <line x1="316" y1="582.6" x2="708" y2="582.6"/>
+    </g>
+    <!-- 笑臉的眼睛（左上 / 右上格） -->
+    <g fill="#67e8f9">
+      <circle cx="370.7" cy="392" r="26"/>
+      <circle cx="653.3" cy="392" r="26"/>
+    </g>
+    <!-- 霓虹粉笑弧（橫跨下排格子） -->
+    <path d="M 388 560 Q 512 712 636 560" stroke="#f472b6" stroke-width="30"
+          stroke-linecap="round" fill="none"/>
+  </g>
+</svg>

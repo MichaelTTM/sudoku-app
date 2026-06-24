@@ -22,6 +22,9 @@ android/app/build
 android/build
 android/.gradle
 
+# 暫存腳本
+/_*.mjs
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
