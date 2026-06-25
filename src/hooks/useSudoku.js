@@ -1,42 +1,54 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import {
-  CELLS,
-  SIZE,
-  generate,
-  conflictsAt,
-  isSolved,
-} from '../game/generator.js'
+import { generate, conflictsAt, isSolved } from '../game/generator.js'
 import { makeRng } from '../game/rng.js'
-import { VARIANTS, buildPeers } from '../game/variants.js'
+import { makeSpec } from '../game/variants.js'
+import { cageConflicts } from '../game/killer.js'
+import { KILLER_PUZZLES } from '../game/killerData.js'
 
 const SAVE_KEY = 'sudoku.save.v3'
 
-const emptyNotes = () => Array.from({ length: CELLS }, () => [])
+const emptyNotes = (cells) => Array.from({ length: cells }, () => [])
+
+// 緊湊籠子 [sum, ...cells] → { sum, cells }
+const expandCages = (compact) => compact.map(([sum, ...cells]) => ({ sum, cells }))
 
 // 還原同一關未完成的進度（只在 levelId 相符時使用）
-function loadSave(levelId) {
+function loadSave(levelId, cells) {
   try {
     const raw = JSON.parse(localStorage.getItem(SAVE_KEY))
     if (!raw || raw.levelId !== levelId) return null
-    if (!Array.isArray(raw.board) || raw.board.length !== CELLS) return null
+    if (!Array.isArray(raw.board) || raw.board.length !== cells) return null
     return raw
   } catch {
     return null
   }
 }
 
-// 依關卡的固定 seed 產生題目（同一關永遠同一題）
-function createGame(level) {
+// 依關卡的固定 seed 產生題目（同一關永遠同一題）。
+// killer 變體用預烘焙資料（runtime 產題太慢），其餘尺寸/變體即時由 seed 產生。
+function createGame(level, spec) {
   const variant = level.variant || 'classic'
-  const { puzzle, solution } = generate(level.difficulty, makeRng(level.seed), variant)
+  let puzzle
+  let solution
+  let cages = null
+  if (spec.killer) {
+    const data = KILLER_PUZZLES[level.seed]
+    solution = data.solution.slice()
+    puzzle = new Array(spec.cells).fill(0)
+    for (const [i, v] of data.givens) puzzle[i] = v
+    cages = expandCages(data.cages)
+  } else {
+    ;({ puzzle, solution } = generate(level.difficulty, makeRng(level.seed), spec))
+  }
   return {
     levelId: level.id,
     difficulty: level.difficulty,
     variant,
     puzzle,
     solution,
+    cages,
     board: puzzle.slice(),
-    notes: emptyNotes(),
+    notes: emptyNotes(spec.cells),
     seconds: 0,
     mistakes: 0,
     hintsUsed: 0,
@@ -45,15 +57,18 @@ function createGame(level) {
 }
 
 export function useSudoku(level, { onWin } = {}) {
-  const [game, setGame] = useState(() => loadSave(level.id) || createGame(level))
+  const spec = useMemo(
+    () => makeSpec(level.size || 9, level.variant || 'classic'),
+    [level.size, level.variant]
+  )
+  const [game, setGame] = useState(
+    () => loadSave(level.id, spec.cells) || createGame(level, spec)
+  )
   const [selected, setSelected] = useState(null)
   const [noteMode, setNoteMode] = useState(false)
   const history = useRef([])
   const wonReported = useRef(false)
-  const peers = useMemo(
-    () => buildPeers(VARIANTS[level.variant] || VARIANTS.classic),
-    [level.variant]
-  )
+  const peers = spec.peers
 
   // 切換到不同關卡時，重建（或還原）該關的局面
   useEffect(() => {
@@ -61,7 +76,7 @@ export function useSudoku(level, { onWin } = {}) {
     wonReported.current = false
     setSelected(null)
     setNoteMode(false)
-    setGame(loadSave(level.id) || createGame(level))
+    setGame(loadSave(level.id, spec.cells) || createGame(level, spec))
   }, [level.id])
 
   // 計時器
@@ -174,8 +189,8 @@ export function useSudoku(level, { onWin } = {}) {
     wonReported.current = false
     setSelected(null)
     setNoteMode(false)
-    setGame(createGame(level))
-  }, [level])
+    setGame(createGame(level, spec))
+  }, [level, spec])
 
   // 衍生資訊：衝突高亮、同數字高亮
   const conflicts =
@@ -186,6 +201,10 @@ export function useSudoku(level, { onWin } = {}) {
     game.board[selected] !== game.solution[selected]
   ) {
     conflicts.add(selected)
+  }
+  // killer：籠內重複 / 超過或不符總和的格子永遠標紅（不需先選取）
+  if (spec.killer && game.cages) {
+    for (const c of cageConflicts(game.board, game.cages)) conflicts.add(c)
   }
   const activeValue = selected != null ? game.board[selected] : 0
 
@@ -203,6 +222,6 @@ export function useSudoku(level, { onWin } = {}) {
     restart,
     conflicts,
     activeValue,
-    SIZE,
+    spec,
   }
 }

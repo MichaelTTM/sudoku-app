@@ -69,39 +69,90 @@ export const CHAPTERS = [
     ],
   },
   {
+    id: 'ch6',
+    name: '巨型矩陣',
+    emoji: '🔢',
+    accent: '#a3e635',
+    desc: '案子才結，新訊息又冒出來——這回 12 格寬，數字不夠用，連字母都上了。',
+    size: 12,
+    levels: [
+      { difficulty: 'starter', seed: 6601, intro: '案子才結沒幾天，桌上又冒出一張矩陣。這回攤開有一面牆寬——12 格，1 到 9 不夠填，A、B、C 也算數。', outro: '填滿了。比想像中好上手——只是大，規矩沒變。' },
+      { difficulty: 'starter', seed: 6602, intro: '又一張寬矩陣，墨跡比上次工整。有人在練手。', outro: '對上了。這串座標，往城北的資料倉庫去。' },
+      { difficulty: 'easy', seed: 6603, intro: '倉庫的鐵架上釘著張 12 格寬的表，邊角捲了。', outro: '解開了。他們把人，當成資料在歸檔。' },
+      { difficulty: 'easy', seed: 6604, intro: '愈往裡走，矩陣愈大。像是故意要拖慢追的人。', outro: '拖不住我。下一格指向倉庫最底層。' },
+      { difficulty: 'medium', seed: 6605, intro: '最底層那張表，A 到 C 排得密密麻麻，看久了發暈。', outro: '暈歸暈，數字老實。盡頭那串座標，指向城西一片塌了半邊的舊街區。' },
+    ],
+  },
+  {
     id: 'ch5',
     name: '碎裂舊城',
     emoji: '🧩',
     accent: '#14b8a6',
-    desc: '結案沒幾天，新的矩陣又冒出來——這次連格子都是碎的。',
+    desc: '城西的舊街區，連格子都是碎的——宮歪歪扭扭，不再方正。',
     variant: 'jigsaw',
     levels: [
-      { difficulty: 'easy', seed: 5501, intro: '案子才結，桌上又出現一張矩陣。這次的宮歪七扭八，不再是方的。', outro: '形狀變了，規矩沒變：每一塊照樣得填滿 1~9。' },
+      { difficulty: 'easy', seed: 5501, intro: '舊街區的牆上釘著張矩陣，宮歪七扭八，不再是方的。', outro: '形狀變了，規矩沒變：每一塊照樣得填滿 1~9。' },
       { difficulty: 'easy', seed: 5502, intro: '碎掉的街區，碎掉的格子。', outro: '拼回去了。又一個座標浮出來。' },
       { difficulty: 'medium', seed: 5503, intro: '宮的邊界繞來繞去，看久了眼睛會花。', outro: '跟著邊界走，數字自己會對上。' },
       { difficulty: 'medium', seed: 5504, intro: '這張矩陣，像被人撕碎再黏回去。', outro: '黏痕底下，藏著下一個地址。' },
-      { difficulty: 'hard', seed: 5505, intro: '最後一塊拼圖，也最不規則。', outro: '城市還在動，案子永遠結不完。我把帽簷壓低，走進雨裡。' },
+      { difficulty: 'hard', seed: 5505, intro: '最後一塊拼圖，也最不規則。', outro: '拼回最後一塊，磚縫底下露出一道往地下主機房的閘門。' },
+    ],
+  },
+  {
+    id: 'ch7',
+    name: '終局矩陣',
+    emoji: '🧠',
+    accent: '#fb7185',
+    desc: '主機房。16 格寬，A 到 G——整座城的祕密攤在一張表上。',
+    size: 16,
+    levels: [
+      { difficulty: 'easy', seed: 7701, intro: '主機房冷得像冰庫。牆上那張表 16 格寬，1 到 9 配 A 到 G，填滿要命。', outro: '撐住了。第一塊面板亮起，露出底下更多的表。' },
+      { difficulty: 'easy', seed: 7702, intro: '一整排終端機，每台螢幕都凍在一張沒填完的巨表上。', outro: '一台一台接上，城市的失蹤名單在我眼前捲動。' },
+      { difficulty: 'medium', seed: 7703, intro: '核心那張表最大，也最冷。我搓了搓手，坐下。', outro: '對齊了。幕後者的代號，藏在第 16 列。' },
+      { difficulty: 'medium', seed: 7704, intro: '警報開始響。剩下的表得在斷電前解完。', outro: '趕在黑掉前填完最後一格。門開了。' },
+      { difficulty: 'hard', seed: 7705, intro: '最後一張，16 乘 16，整起案子的底牌。慢慢來，別填錯。', outro: '全亮了。我盯著那串座標，笑了——命運是場隨機漫步，可這一步，我自己選的。' },
+    ],
+  },
+  {
+    id: 'ch8',
+    name: '致命結算',
+    emoji: '🧮',
+    accent: '#f43f5e',
+    desc: '帳房先生死了，留下一本只有「組別總和」、沒有單筆數字的帳。',
+    variant: 'killer',
+    levels: [
+      { difficulty: 'easy', seed: 8801, intro: '幫派的帳房先生倒在算盤旁。他的帳本怪得很——數字被圈成一組組，每組只標一個總和，單筆全空著。', outro: '湊出來了。原來他把每筆髒錢，都藏進加總裡。' },
+      { difficulty: 'easy', seed: 8802, intro: '又一頁。圈圈裡的數字不能重複，加起來得剛好等於那個總和——就這麼一條線索。', outro: '對上了。這本帳，記的不只是錢，還有人。' },
+      { difficulty: 'medium', seed: 8811, intro: '組越圈越大，總和越湊越難。帳房先生防的就是有人來讀。', outro: '防不住我。下一筆，指向碼頭的保險箱。' },
+      { difficulty: 'medium', seed: 8812, intro: '保險箱裡又一本帳，墨跡未乾。看來他死前還在記。', outro: '記到一半被打斷的，往往最要命。我把缺口補上了。' },
+      { difficulty: 'hard', seed: 8821, intro: '最後一本，總和咬得最緊，一個數字錯，整頁垮。深吸一口氣。', outro: '結清了。帳房先生用一本加總帳，替整座城留了底——而我，剛把它讀完。' },
     ],
   },
 ]
 
-// 攤平成有序清單，補上 id / 章節資訊 / 變體 / 序號
-export const LEVELS = CHAPTERS.flatMap((chapter, ci) =>
-  chapter.levels.map((lv, li) => {
+// 攤平成有序清單，補上 id / 章節資訊 / 變體 / 序號。
+// 重要：關卡 id（存檔 key）用章節「穩定編號」chapter.id（'ch5'→5）計算，
+// 與章節在陣列中的顯示位置脫鉤——這樣調整章節順序也不會改到已上線版本的存檔 key。
+// label（地圖/標題顯示）則用顯示位置，讓畫面上的「第 X-Y 關」自然遞增。
+export const LEVELS = CHAPTERS.flatMap((chapter, ci) => {
+  const num = Number(String(chapter.id).replace('ch', '')) // 穩定章節編號
+  return chapter.levels.map((lv, li) => {
     const variant = lv.variant || chapter.variant || 'classic'
+    const size = lv.size || chapter.size || 9
     return {
       ...lv,
-      id: `${ci + 1}-${li + 1}`,
+      id: `${num}-${li + 1}`, // 穩定存檔 key
       chapterId: chapter.id,
       chapterName: chapter.name,
       accent: chapter.accent,
       variant,
       variantLabel: VARIANTS[variant]?.label || '經典',
+      size,
       order: ci * 100 + li,
-      label: `${ci + 1}-${li + 1}`,
+      label: `${ci + 1}-${li + 1}`, // 顯示用（依地圖順序）
     }
   })
-)
+})
 
 export const LEVEL_ORDER = LEVELS.map((l) => l.id)
 

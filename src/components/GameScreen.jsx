@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useSudoku } from '../hooks/useSudoku.js'
 import { calcStars } from '../hooks/useProgress.js'
-import { SIZE } from '../game/generator.js'
+import { valueFromKey } from '../game/variants.js'
 import { nextLevelId, getLevel } from '../game/levels.js'
 import Header from './Header.jsx'
 import Board from './Board.jsx'
@@ -23,7 +23,8 @@ export default function GameScreen({ level, alreadyDone, theme, onToggleTheme, o
       onWin(level.id, { ...r, stars })
     },
   })
-  const { game, selected, setSelected } = s
+  const { game, selected, setSelected, spec } = s
+  const N = spec.size
 
   // 換關卡時 App 會以 key 重新掛載本元件，showIntro/result 自然回到初始值，
   // 因此不需要（也不能）用 effect 重置，否則過關當下 alreadyDone 變動會把 result 清掉。
@@ -32,25 +33,27 @@ export default function GameScreen({ level, alreadyDone, theme, onToggleTheme, o
   useEffect(() => {
     const onKey = (e) => {
       if (game.status !== 'playing' || showIntro) return
-      if (e.key >= '1' && e.key <= '9') s.inputDigit(Number(e.key))
-      else if (e.key === 'Backspace' || e.key === 'Delete' || e.key === '0') s.erase()
+      if (e.key === 'Backspace' || e.key === 'Delete' || e.key === '0') s.erase()
+      else if (e.key === 'z' && (e.metaKey || e.ctrlKey)) s.undo()
       else if (e.key.toLowerCase() === 'n') s.toggleNoteMode()
       else if (e.key.toLowerCase() === 'h') s.hint()
-      else if (e.key === 'z' && (e.metaKey || e.ctrlKey)) s.undo()
       else if (selected != null && e.key.startsWith('Arrow')) {
         e.preventDefault()
-        let r = Math.floor(selected / SIZE)
-        let c = selected % SIZE
+        let r = Math.floor(selected / N)
+        let c = selected % N
         if (e.key === 'ArrowUp') r = Math.max(0, r - 1)
-        if (e.key === 'ArrowDown') r = Math.min(SIZE - 1, r + 1)
+        if (e.key === 'ArrowDown') r = Math.min(N - 1, r + 1)
         if (e.key === 'ArrowLeft') c = Math.max(0, c - 1)
-        if (e.key === 'ArrowRight') c = Math.min(SIZE - 1, c + 1)
-        setSelected(r * SIZE + c)
+        if (e.key === 'ArrowRight') c = Math.min(N - 1, c + 1)
+        setSelected(r * N + c)
+      } else {
+        const v = valueFromKey(e.key, N)
+        if (v) s.inputDigit(v)
       }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [s, game.status, selected, setSelected, showIntro])
+  }, [s, game.status, selected, setSelected, showIntro, N])
 
   const next = nextLevelId(level.id)
 
@@ -75,6 +78,7 @@ export default function GameScreen({ level, alreadyDone, theme, onToggleTheme, o
           accent={level.accent}
           variant={level.variant}
           variantLabel={level.variantLabel}
+          size={N}
         />
       </div>
 
@@ -86,7 +90,8 @@ export default function GameScreen({ level, alreadyDone, theme, onToggleTheme, o
         conflicts={s.conflicts}
         activeValue={s.activeValue}
         onSelect={setSelected}
-        variant={level.variant}
+        spec={spec}
+        cages={game.cages}
       />
 
       <Controls
@@ -97,7 +102,7 @@ export default function GameScreen({ level, alreadyDone, theme, onToggleTheme, o
         noteMode={s.noteMode}
       />
 
-      <NumberPad board={game.board} onInput={s.inputDigit} noteMode={s.noteMode} />
+      <NumberPad board={game.board} onInput={s.inputDigit} noteMode={s.noteMode} spec={spec} />
 
       <button
         onClick={s.restart}

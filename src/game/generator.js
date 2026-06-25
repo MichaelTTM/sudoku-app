@@ -1,29 +1,18 @@
-// 數獨核心邏輯：產題、解題、唯一解驗證、難度分級
-// 盤面以長度 81 的一維陣列表示，0 代表空格，1~9 為填入數字。
-// 規則改用 variants.js 的 peers 抽象描述，支援經典 / 對角線 等變體。
+// 數獨核心邏輯：產題、解題、唯一解驗證、難度分級。
+// 盤面以一維陣列表示，0 代表空格，1~N 為填入數字。
+// 幾何（盤邊長、宮、對角線、不規則宮）全部由 variants.js 的 spec 描述，
+// 支援 9×9 / 12×12 / 16×16 與經典 / 對角線 / 不規則宮等變體。
 
-import { VARIANTS, buildPeers } from './variants.js'
+import { makeSpec } from './variants.js'
 
-export const SIZE = 9
-export const BOX = 3
-export const CELLS = SIZE * SIZE
-
-// 難度設定：targetClues 為保留的提示數量（越少越難）
+// 難度設定：clues 為各尺寸保留的提示數量（越少越難）。
+// 9×9 維持原值（既有關卡題目與存檔不可變動）；大盤面多留提示，兼顧可玩性與
+// 唯一解驗證的效能上限。
 export const DIFFICULTIES = {
-  starter: { key: 'starter', label: '入門', targetClues: 50 },
-  easy: { key: 'easy', label: '簡單', targetClues: 44 },
-  medium: { key: 'medium', label: '中等', targetClues: 36 },
-  hard: { key: 'hard', label: '困難', targetClues: 30 },
-}
-
-export function rowOf(i) {
-  return Math.floor(i / SIZE)
-}
-export function colOf(i) {
-  return i % SIZE
-}
-export function boxOf(i) {
-  return Math.floor(rowOf(i) / BOX) * BOX + Math.floor(colOf(i) / BOX)
+  starter: { key: 'starter', label: '入門', clues: { 9: 50, 12: 92, 16: 170 } },
+  easy: { key: 'easy', label: '簡單', clues: { 9: 44, 12: 82, 16: 154 } },
+  medium: { key: 'medium', label: '中等', clues: { 9: 36, 12: 70, 16: 138 } },
+  hard: { key: 'hard', label: '困難', clues: { 9: 30, 12: 62, 16: 124 } },
 }
 
 function shuffle(arr, rng = Math.random) {
@@ -34,17 +23,18 @@ function shuffle(arr, rng = Math.random) {
   return arr
 }
 
-// MRV 啟發：挑「候選最少」的空格優先填，大幅減少回溯（對不規則宮等變體尤其關鍵）。
+// MRV 啟發：挑「候選最少」的空格優先填，大幅減少回溯（不規則宮 / 大盤面尤其關鍵）。
 // 回傳 { idx, cands } 或 null（已無空格）。cands 為空代表死路。
-function pickCell(board, peers) {
+function pickCell(board, spec) {
+  const { cells, size, peers } = spec
   let bestIdx = -1
   let bestCands = null
-  for (let i = 0; i < CELLS; i++) {
+  for (let i = 0; i < cells; i++) {
     if (board[i] !== 0) continue
-    const used = new Array(SIZE + 1).fill(false)
+    const used = new Array(size + 1).fill(false)
     for (const p of peers[i]) if (board[p]) used[board[p]] = true
     const cands = []
-    for (let v = 1; v <= SIZE; v++) if (!used[v]) cands.push(v)
+    for (let v = 1; v <= size; v++) if (!used[v]) cands.push(v)
     if (bestCands === null || cands.length < bestCands.length) {
       bestIdx = i
       bestCands = cands
@@ -55,26 +45,32 @@ function pickCell(board, peers) {
 }
 
 // 單次嘗試填滿（MRV + 隨機值序），超過步數預算就放棄，交由 fillBoard 重啟。
-function tryFill(board, rng, peers, budget) {
+function tryFill(board, rng, spec, budget) {
   if (++budget.n > budget.cap) return false
-  const sel = pickCell(board, peers)
+  const sel = pickCell(board, spec)
   if (!sel) return true
   if (sel.cands.length === 0) return false
   for (const v of shuffle(sel.cands, rng)) {
     board[sel.idx] = v
-    if (tryFill(board, rng, peers, budget)) return true
+    if (tryFill(board, rng, spec, budget)) return true
     board[sel.idx] = 0
   }
   return false
 }
 
-// 填滿一個完整合法的解盤。少數變體 seed 的隨機值序會讓回溯爆炸，因此每次嘗試
+// 步數 / 節點預算依格數線性縮放（9×9 算出來剛好等於原本的 30000 / 8000，確保
+// 既有 9×9 題目完全不變）；大盤面回溯較重，給更高的上限。
+const fillCap = (spec) => Math.round((30000 * spec.cells) / 81)
+const countCap = (spec) => Math.round((8000 * spec.cells) / 81)
+
+// 填滿一個完整合法的解盤。少數變體 / seed 的隨機值序會讓回溯爆炸，因此每次嘗試
 // 設步數上限；超過就用「已往前推進的 rng」重來 → 換一組值序，通常很快就成功。
 // 同 seed → 同 rng 序列 → 結果仍固定（題目可重現）。
-function fillBoard(board, rng, peers) {
+function fillBoard(board, rng, spec) {
+  const cap = fillCap(spec)
   for (let attempt = 0; attempt < 2000; attempt++) {
     const work = board.slice()
-    if (tryFill(work, rng, peers, { n: 0, cap: 30000 })) {
+    if (tryFill(work, rng, spec, { n: 0, cap })) {
       for (let i = 0; i < board.length; i++) board[i] = work[i]
       return true
     }
@@ -84,48 +80,56 @@ function fillBoard(board, rng, peers) {
 
 // 計算解的數量，最多數到 limit 就停（驗證唯一解，效能可控）。
 // budget 限制搜尋節點數：少數變體 seed 的解樹會爆炸，超過預算時保守回傳 limit
-// （視為「非唯一」），讓上層保留該提示 → 產題時間有上限，題目仍保證唯一解。
-function countSolutions(board, peers, limit = 2, budget = { n: 0, cap: 8000 }) {
+//（視為「非唯一」），讓上層保留該提示 → 產題時間有上限，題目仍保證唯一解。
+function countSolutions(board, spec, limit, budget) {
   if (++budget.n > budget.cap) return limit
-  const sel = pickCell(board, peers)
+  const sel = pickCell(board, spec)
   if (!sel) return 1
   if (sel.cands.length === 0) return 0
   let count = 0
   for (const v of sel.cands) {
     board[sel.idx] = v
-    count += countSolutions(board, peers, limit, budget)
+    count += countSolutions(board, spec, limit, budget)
     board[sel.idx] = 0
     if (count >= limit) return count
   }
   return count
 }
 
-// 求一個解（回傳新陣列，不改動輸入）
-export function solve(input, variantKey = 'classic') {
-  const peers = buildPeers(VARIANTS[variantKey] || VARIANTS.classic)
-  const board = input.slice()
-  return fillBoard(board, Math.random, peers) ? board : null
+// 產生一個完整合法解盤（依 rng 決定論）。killer 變體用來先有解再長籠子。
+export function fullSolution(rng, spec) {
+  const s = spec || makeSpec(9, 'classic')
+  const board = new Array(s.cells).fill(0)
+  return fillBoard(board, rng, s) ? board : null
 }
 
-// 產生一道題目：回傳 { puzzle, solution }，保證在該變體下唯一解
-export function generate(difficultyKey = 'medium', rng = Math.random, variantKey = 'classic') {
-  const difficulty = DIFFICULTIES[difficultyKey] || DIFFICULTIES.medium
-  const variant = VARIANTS[variantKey] || VARIANTS.classic
-  const peers = buildPeers(variant)
+// 求一個解（回傳新陣列，不改動輸入）
+export function solve(input, spec) {
+  const s = spec || makeSpec(9, 'classic')
+  const board = input.slice()
+  return fillBoard(board, Math.random, s) ? board : null
+}
 
-  const solution = new Array(CELLS).fill(0)
-  fillBoard(solution, rng, peers)
+// 產生一道題目：回傳 { puzzle, solution }，保證在該 spec 下唯一解。
+export function generate(difficultyKey = 'medium', rng = Math.random, spec) {
+  const s = spec || makeSpec(9, 'classic')
+  const difficulty = DIFFICULTIES[difficultyKey] || DIFFICULTIES.medium
+  const targetClues = difficulty.clues[s.size] ?? difficulty.clues[9]
+
+  const solution = new Array(s.cells).fill(0)
+  fillBoard(solution, rng, s)
 
   const puzzle = solution.slice()
-  const order = shuffle([...Array(CELLS).keys()], rng)
-  let clues = CELLS
+  const order = shuffle([...Array(s.cells).keys()], rng)
+  let clues = s.cells
+  const cap = countCap(s)
 
   for (const pos of order) {
-    if (clues <= difficulty.targetClues) break
+    if (clues <= targetClues) break
     const backup = puzzle[pos]
     if (backup === 0) continue
     puzzle[pos] = 0
-    if (countSolutions(puzzle.slice(), peers, 2) !== 1) {
+    if (countSolutions(puzzle.slice(), s, 2, { n: 0, cap }) !== 1) {
       puzzle[pos] = backup
     } else {
       clues--
@@ -148,15 +152,15 @@ export function conflictsAt(board, index, peers) {
 
 // 整盤是否填滿且完全正確
 export function isSolved(board, solution) {
-  for (let i = 0; i < CELLS; i++) {
+  for (let i = 0; i < board.length; i++) {
     if (board[i] === 0 || board[i] !== solution[i]) return false
   }
   return true
 }
 
 // 統計每個數字已填數量（用於數字鍵盤顯示剩餘）
-export function digitCounts(board) {
-  const counts = new Array(SIZE + 1).fill(0)
+export function digitCounts(board, size) {
+  const counts = new Array(size + 1).fill(0)
   for (const v of board) if (v) counts[v]++
   return counts
 }

@@ -16,6 +16,7 @@ export default function Header({
   accent,
   variant,
   variantLabel,
+  size = 9,
 }) {
   const isVariant = variant && variant !== 'classic'
   return (
@@ -26,6 +27,14 @@ export default function Header({
           <span style={{ color: accent }}>第 {levelLabel} 關</span>
         </h1>
         <div className="flex items-center gap-1.5">
+          {size > 9 && (
+            <span
+              className="text-xs font-semibold rounded-full px-2.5 py-1"
+              style={{ backgroundColor: 'var(--accent-soft)', color: accent }}
+            >
+              {size}×{size}
+            </span>
+          )}
           {isVariant && (
             <span
               className="text-xs font-semibold rounded-full px-2.5 py-1 text-white"

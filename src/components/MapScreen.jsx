@@ -46,7 +46,7 @@ function LevelNode({ level, index, state, record, onSelect }) {
             className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full text-[0.6rem] font-bold text-white shadow"
             style={{ backgroundColor: level.accent }}
           >
-            {level.variant === 'jigsaw' ? '▦' : '✕'}
+            {level.variant === 'jigsaw' ? '▦' : level.variant === 'killer' ? '∑' : '✕'}
           </span>
         )}
       </div>
@@ -112,10 +112,7 @@ export default function MapScreen({ progress, onSelect, theme, onToggleTheme }) 
           </div>
 
           <div className="flex flex-col gap-5">
-            {chapter.levels.map((_, li) => {
-              const level = LEVELS.find(
-                (l) => l.id === `${CHAPTERS.indexOf(chapter) + 1}-${li + 1}`
-              )
+            {LEVELS.filter((l) => l.chapterId === chapter.id).map((level) => {
               const record = progress.completed[level.id]
               const state = record
                 ? 'done'
