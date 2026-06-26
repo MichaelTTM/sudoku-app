@@ -2,6 +2,7 @@ import { forwardRef, useRef, useEffect, useState, useMemo } from 'react'
 import { CHAPTERS, STORY, LEVELS } from '../game/levels.js'
 import { DIFFICULTIES } from '../game/generator.js'
 import ThemeToggle from './ThemeToggle.jsx'
+import DailyEntryCard from './DailyEntryCard.jsx'
 
 function MiniStars({ count }) {
   return (
@@ -119,7 +120,7 @@ function bezierCtrl(x1, y1, x2, y2, amount = 32) {
   return { cx: mx + (-dy / len) * amount, cy: my + (dx / len) * amount }
 }
 
-export default function MapScreen({ progress, onSelect, theme, onToggleTheme, returnState, onReturnDone }) {
+export default function MapScreen({ progress, onSelect, theme, onToggleTheme, returnState, onReturnDone, dailyRecords, dailyStreak, onPlayDaily }) {
   const nodeRefs = useRef({})
   const containerRef = useRef(null)
   const [nodePositions, setNodePositions] = useState({}) // { levelId: {x, y} }
@@ -325,6 +326,14 @@ export default function MapScreen({ progress, onSelect, theme, onToggleTheme, re
       <p className="text-xs text-[var(--ink-soft)] leading-relaxed bg-[var(--surface)] rounded-xl p-3 mb-6 border border-[var(--line-soft)]">
         {STORY.intro}
       </p>
+
+      {onPlayDaily && (
+        <DailyEntryCard
+          records={dailyRecords || {}}
+          streak={dailyStreak || 0}
+          onPlay={onPlayDaily}
+        />
+      )}
 
       {CHAPTERS.map((chapter) => (
         <section key={chapter.id} className="mb-8">
