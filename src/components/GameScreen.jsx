@@ -92,6 +92,7 @@ export default function GameScreen({ level, alreadyDone, theme, onToggleTheme, o
         onSelect={setSelected}
         spec={spec}
         cages={game.cages}
+        sandwichClues={s.sandwichClues}
       />
 
       <Controls

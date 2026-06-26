@@ -72,7 +72,7 @@ const LevelNode = forwardRef(function LevelNode(
             className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full text-[0.6rem] font-bold text-white shadow z-10"
             style={{ backgroundColor: level.accent }}
           >
-            {level.variant === 'jigsaw' ? '▦' : level.variant === 'killer' ? '∑' : '✕'}
+            {level.variant === 'jigsaw' ? '▦' : level.variant === 'killer' ? '∑' : level.variant === 'sandwich' ? '🥪' : '✕'}
           </span>
         )}
       </div>

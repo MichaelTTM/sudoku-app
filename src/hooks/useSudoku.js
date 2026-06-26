@@ -4,6 +4,7 @@ import { makeRng } from '../game/rng.js'
 import { makeSpec } from '../game/variants.js'
 import { cageConflicts } from '../game/killer.js'
 import { KILLER_PUZZLES } from '../game/killerData.js'
+import { SANDWICH_PUZZLES } from '../game/sandwichData.js'
 
 const SAVE_KEY = 'sudoku.save.v3'
 
@@ -31,12 +32,19 @@ function createGame(level, spec) {
   let puzzle
   let solution
   let cages = null
+  let sandwichClues = null
   if (spec.killer) {
     const data = KILLER_PUZZLES[level.seed]
     solution = data.solution.slice()
     puzzle = new Array(spec.cells).fill(0)
     for (const [i, v] of data.givens) puzzle[i] = v
     cages = expandCages(data.cages)
+  } else if (spec.sandwich) {
+    const data = SANDWICH_PUZZLES[level.seed]
+    solution = data.solution.slice()
+    puzzle = new Array(spec.cells).fill(0)
+    for (const [i, v] of data.givens) puzzle[i] = v
+    sandwichClues = { rowClues: data.rowClues, colClues: data.colClues }
   } else {
     ;({ puzzle, solution } = generate(level.difficulty, makeRng(level.seed), spec))
   }
@@ -47,6 +55,7 @@ function createGame(level, spec) {
     puzzle,
     solution,
     cages,
+    sandwichClues,
     board: puzzle.slice(),
     notes: emptyNotes(spec.cells),
     seconds: 0,
@@ -223,5 +232,6 @@ export function useSudoku(level, { onWin } = {}) {
     conflicts,
     activeValue,
     spec,
+    sandwichClues: game.sandwichClues ?? null,
   }
 }

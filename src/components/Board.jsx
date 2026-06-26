@@ -1,6 +1,7 @@
 import Cell from './Cell.jsx'
 
 // 盤面（9/12/16）：依 spec 算好每格高亮狀態後交給 Cell。
+// sandwichClues: { rowClues: number[], colClues: number[] } | null
 export default function Board({
   board,
   notes,
@@ -11,6 +12,7 @@ export default function Board({
   onSelect,
   spec,
   cages,
+  sandwichClues,
 }) {
   const { size, boxRows, boxCols, regions, diagonalCells, symbols } = spec
 
@@ -34,9 +36,9 @@ export default function Board({
   const selUnit =
     selected == null ? -1 : regions ? regions[selected] : boxIdOf(selR, selC)
 
-  return (
+  const grid = (
     <div
-      className="grid w-full max-w-[min(94vw,32rem)] mx-auto rounded-md overflow-hidden border-2 border-[var(--line-strong)] bg-[var(--surface)] shadow-sm select-none"
+      className="grid w-full rounded-md overflow-hidden border-2 border-[var(--line-strong)] bg-[var(--surface)] shadow-sm select-none"
       style={{ gridTemplateColumns: `repeat(${size}, minmax(0, 1fr))` }}
     >
       {board.map((value, i) => {
@@ -80,6 +82,38 @@ export default function Board({
           />
         )
       })}
+    </div>
+  )
+
+  // 三明治變體：盤外線索（上方 col clues、左側 row clues）
+  if (!sandwichClues) return <div className="w-full max-w-[min(94vw,32rem)] mx-auto">{grid}</div>
+
+  const { rowClues, colClues } = sandwichClues
+  const clueStyle = {
+    fontSize: '0.65rem',
+    fontWeight: 700,
+    color: 'var(--accent)',
+    lineHeight: 1,
+  }
+
+  return (
+    <div className="w-full max-w-[min(94vw,32rem)] mx-auto" style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gridTemplateRows: 'auto 1fr', gap: 2 }}>
+      {/* 左上角空格 */}
+      <div />
+      {/* 上方 col clues */}
+      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${size}, minmax(0, 1fr))` }}>
+        {colClues.map((v, c) => (
+          <div key={c} className="flex items-end justify-center pb-0.5" style={clueStyle}>{v}</div>
+        ))}
+      </div>
+      {/* 左側 row clues */}
+      <div style={{ display: 'grid', gridTemplateRows: `repeat(${size}, minmax(0, 1fr))` }}>
+        {rowClues.map((v, r) => (
+          <div key={r} className="flex items-center justify-end pr-1" style={clueStyle}>{v}</div>
+        ))}
+      </div>
+      {/* 主盤 */}
+      {grid}
     </div>
   )
 }

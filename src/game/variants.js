@@ -80,6 +80,13 @@ export const VARIANTS = {
     killer: true,
     rule: '沒有提示數字。每個粗框「籠子」左上角的數字是籠內總和——籠內數字不能重複，加起來要剛好等於它。',
   },
+  sandwich: {
+    key: 'sandwich',
+    label: '三明治',
+    diagonals: false,
+    sandwich: true,
+    rule: '盤面左側與上方各有一組數字。每個數字代表該行（或列）中，1 和 9 夾住的所有數字加總。1 和 9 不算在內。',
+  },
 }
 
 // 標準矩形宮（boxRows × boxCols 鋪滿 N×N）
@@ -157,6 +164,7 @@ export function makeSpec(size = 9, variantKey = 'classic') {
     diagonals: !!variant.diagonals,
     jigsaw: useJigsaw,
     killer: !!variant.killer,
+    sandwich: !!variant.sandwich,
     regions,
     diagonalCells,
     boxes,
