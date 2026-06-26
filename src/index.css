@@ -53,3 +53,15 @@ body {
   -webkit-user-select: none;
   user-select: none;
 }
+
+@keyframes breathe {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.3); opacity: 1; }
+}
+
+@keyframes mapDrawPath { to { stroke-dashoffset: 0; } }
+@keyframes mapDotAppear { to { opacity: 1; } }
+@keyframes mapDotPop {
+  0% { r: 9; opacity: 0.6; }
+  100% { r: 20; opacity: 0; }
+}

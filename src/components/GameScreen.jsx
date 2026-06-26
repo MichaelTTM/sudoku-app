@@ -11,7 +11,7 @@ import WinModal from './WinModal.jsx'
 import StoryModal from './StoryModal.jsx'
 import ThemeToggle from './ThemeToggle.jsx'
 
-export default function GameScreen({ level, alreadyDone, theme, onToggleTheme, onWin, onExit, onGoLevel }) {
+export default function GameScreen({ level, alreadyDone, theme, onToggleTheme, onWin, onExit, onGoLevel, onWinNext }) {
   // 已通關過的關卡重玩時不再顯示進場劇情
   const [showIntro, setShowIntro] = useState(!alreadyDone)
   const [result, setResult] = useState(null)
@@ -127,7 +127,7 @@ export default function GameScreen({ level, alreadyDone, theme, onToggleTheme, o
           mistakes={result.mistakes}
           hintsUsed={result.hintsUsed}
           hasNext={!!next}
-          onNext={() => onGoLevel(getLevel(next))}
+          onNext={() => onWinNext ? onWinNext(level.id, next) : onGoLevel(getLevel(next))}
           onBack={onExit}
         />
       )}
